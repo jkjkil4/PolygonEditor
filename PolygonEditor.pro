@@ -27,6 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 RC_ICONS += A.ico
+VERSION = 0.1.0
 
 SOURCES += \
         AddBackgroundDialog/addbackgrounddialog.cpp \
