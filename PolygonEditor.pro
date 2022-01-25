@@ -8,6 +8,8 @@ QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+QMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
+
 TARGET = PolygonEditor
 TEMPLATE = app
 
@@ -23,6 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 CONFIG += c++11
+
+RC_ICONS += A.ico
 
 SOURCES += \
         AddBackgroundDialog/addbackgrounddialog.cpp \
