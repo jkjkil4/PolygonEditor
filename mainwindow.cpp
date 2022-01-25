@@ -47,6 +47,15 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
     connect(ui->actExportAll, &QAction::triggered, [this] { showPlainText(fmtAll()); });
+    connect(ui->actAbout, &QAction::triggered, [this] {
+        QString info;
+        info += "作者: jkjkil4<br>";
+        info += "gitee: <a href=https://gitee.com/jkjkil4/PolygonEditor>https://gitee.com/jkjkil4/PolygonEditor</a>";
+        QMessageBox::about(this, "关于", info);
+    });
+    connect(ui->actAboutQt, &QAction::triggered, [this] {
+        QMessageBox::aboutQt(this);
+    });
     connect(ui->listWidget, &SideListWidget::newPolygon, this, &MainWindow::onAddPolygonClicked);
     connect(ui->listWidget, &SideListWidget::newBackground, this, &MainWindow::onAddBackgroundClicked);
 

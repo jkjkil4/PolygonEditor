@@ -142,8 +142,16 @@
     <addaction name="actAddPolygon"/>
     <addaction name="actAddBackground"/>
    </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>关于</string>
+    </property>
+    <addaction name="actAbout"/>
+    <addaction name="actAboutQt"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <action name="actNew">
    <property name="text">
@@ -190,6 +198,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actAbout">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
+  <action name="actAboutQt">
+   <property name="text">
+    <string>关于Qt</string>
    </property>
   </action>
  </widget>
