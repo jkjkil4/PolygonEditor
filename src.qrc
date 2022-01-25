@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/CursorIcon">
+        <file>src/ArrowCursor.png</file>
+        <file>src/MoveCursor.png</file>
+        <file>src/VertexCursor.png</file>
+    </qresource>
+</RCC>
