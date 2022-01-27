@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     connect(ui->actAbout, &QAction::triggered, [this] {
         QString info;
-        info += "PolygonEditor v0.1.0-alpha<br>";
+        info += "PolygonEditor v0.1.0<br>";
         info += "作者: jkjkil4<br>";
         info += "gitee: <a href=https://gitee.com/jkjkil4/PolygonEditor>https://gitee.com/jkjkil4/PolygonEditor</a>";
         QMessageBox::about(this, "关于", info);
