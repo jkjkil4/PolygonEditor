@@ -41,14 +41,21 @@ MainWindow::MainWindow(QWidget *parent) :
     });
     connect(ui->actSaveAs, &QAction::triggered, [this] {
         QString filePath = QFileDialog::getSaveFileName(this, "另存为", "untitled.pep", "PolygonEditor Project (*pep)");
+        if(filePath.isEmpty())
+            return;
         if(save(filePath)) {
             mFilePath = filePath;
             setChanged(false);
         }
     });
-    connect(ui->actExportAll, &QAction::triggered, [this] { showPlainText(fmtAll()); });
+    connect(ui->actExportAll, &QAction::triggered, [this] {
+        bool ok;
+        double scale = askScale(&ok);
+        if(ok) showPlainText(fmtAll(scale));
+    });
     connect(ui->actAbout, &QAction::triggered, [this] {
         QString info;
+        info += "PolygonEditor v0.1.0-alpha<br>";
         info += "作者: jkjkil4<br>";
         info += "gitee: <a href=https://gitee.com/jkjkil4/PolygonEditor>https://gitee.com/jkjkil4/PolygonEditor</a>";
         QMessageBox::about(this, "关于", info);
@@ -66,7 +73,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->listWidget, &SideListWidget::itemTextChanged, ui->viewport, &Viewport::onItemTextChanged);
     connect(ui->listWidget, &SideListWidget::itemRemoved, ui->viewport, &Viewport::onItemRemoved);
     connect(ui->listWidget, &SideListWidget::itemExportRequested, [this](QListWidgetItem *item) {
-        showPlainText(fmt(item->text(), ui->viewport->getPolygon(item->text())));
+        bool ok;
+        double scale = askScale(&ok);
+        if(ok) showPlainText(fmt(item->text(), ui->viewport->getPolygon(item->text()), scale));
     });
 
     connect(ui->rbArrow, QOverload<bool>::of(&QRadioButton::clicked), [this](bool enabled) {
@@ -147,6 +156,7 @@ bool MainWindow::save(const QString &filePath) {
     QPoint offset = ui->viewport->getOffset();
 
     QXmlStreamWriter xml(&file);
+    xml.setAutoFormatting(true);
     xml.writeStartDocument();
     xml.writeStartElement("PolygonEditorProject");
     xml.writeAttribute("Version", "1");
@@ -255,9 +265,10 @@ void MainWindow::clear() {
     mFilePath = "";
 }
 
-QString MainWindow::fmt(const QString &name, const Viewport::Polygon &polygon) {
+QString MainWindow::fmt(const QString &name, const Viewport::Polygon &polygon, double scale) {
     QString result;
-    result += QString("%1  [x: %2  y: %3]\n").arg(name).arg(polygon.base.x).arg(polygon.base.y);
+    result += QString("%1  [x: %2  y: %3]\n").arg(name)
+            .arg(qRound(polygon.base.x * scale * 100) / 100.0).arg(qRound(polygon.base.y * scale * 100) / 100.0);
     result += "ds_list_add(\n\tlistVertex,\n\t";
     int times = 0;
     bool hasPrev = false;
@@ -272,22 +283,39 @@ QString MainWindow::fmt(const QString &name, const Viewport::Polygon &polygon) {
             times = 0;
         }
 
-        result += QString("[%1, %2]").arg(pos.x()).arg(pos.y());
+        result += QString("[%1, %2]").arg(qRound(pos.x() * scale * 100) / 100.0).arg(qRound(pos.y() * scale * 100) / 100.0);
     }
     result += "\n);";
     return result;
 }
 
-QString MainWindow::fmtAll() {
+QString MainWindow::fmtAll(double scale) {
     QMap<QString, Viewport::Polygon> map = ui->viewport->getAllPolygon();
     QString total;
     for(auto iter = map.cbegin(); iter != map.cend(); ++iter) {
-        total += fmt(iter.key(), iter.value());
+        total += fmt(iter.key(), iter.value(), scale);
         total += "\n\n";
     }
     return total;
 }
 
+double MainWindow::askScale(bool *ok) {
+    QInputDialog dialog;
+    dialog.setInputMode(QInputDialog::DoubleInput);
+    dialog.resize(320, dialog.height());
+    dialog.setWindowTitle("输入缩放");
+    dialog.setLabelText("缩放倍数：");
+    dialog.setDoubleMinimum(0.5);
+    dialog.setDoubleValue(1);
+    dialog.setOkButtonText("确定");
+    dialog.setCancelButtonText("取消");
+    if(dialog.exec()) {
+        if(ok) *ok = true;
+        return dialog.doubleValue();
+    }
+    if(ok) *ok = false;
+    return 1;
+}
 void MainWindow::showPlainText(const QString &text) {
     QPlainTextEdit *edit = new QPlainTextEdit(text);
     edit->setReadOnly(true);

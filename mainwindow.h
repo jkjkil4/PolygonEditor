@@ -37,9 +37,10 @@ public:
     bool open(const QString &filePath);
     void clear();
 
-    QString fmt(const QString &name, const Viewport::Polygon &polygon);
-    QString fmtAll();
+    QString fmt(const QString &name, const Viewport::Polygon &polygon, double scale = 1);
+    QString fmtAll(double scale = 1);
 
+    double askScale(bool *ok = nullptr);
     void showPlainText(const QString &text);
 
 private slots:

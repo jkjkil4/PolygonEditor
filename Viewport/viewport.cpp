@@ -199,6 +199,18 @@ void Viewport::mouseReleaseEvent(QMouseEvent *ev) {
         }
     } else if(ev->button() == Qt::MiddleButton) {
         setCursor(Qt::ArrowCursor);
+    } else if(ev->button() == Qt::RightButton) {
+        if(mMode == Vertex && mMapPolygon.contains(mSelection)) {
+            Polygon &polygon = mMapPolygon[mSelection];
+            QPoint mouse = ev->pos() - mOffset - QPoint(width() / 2, height() / 2);
+            QPoint offset = mouse - QPoint(polygon.base.x, polygon.base.y);
+            polygon.base.x = mouse.x();
+            polygon.base.y = mouse.y();
+            for(QPoint &pos : polygon.list)
+                pos -= offset;
+            emit dataChanged();
+            update();
+        }
     }
 }
 void Viewport::mouseDoubleClickEvent(QMouseEvent *ev) {
@@ -224,7 +236,7 @@ void Viewport::paintEvent(QPaintEvent *) {
     for(auto iter = mMapPolygon.cbegin(); iter != mMapPolygon.cend(); ++iter) {
         const QString &name = iter.key();
         const Polygon &polygon = iter.value();
-        if(!polygon.base.enabled)
+        if(!polygon.base.enabled || polygon.list.isEmpty())
             continue;
 
         QPoint prev = *polygon.list.crbegin();

@@ -27,7 +27,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 RC_ICONS += A.ico
+RC_LANG = 0x0004
 VERSION = 0.1.0
+QMAKE_TARGET_DESCRIPTION = "A program for editing polygons"
+QMAKE_TARGET_COPYRIGHT = "jkjkil4"
 
 SOURCES += \
         AddBackgroundDialog/addbackgrounddialog.cpp \
