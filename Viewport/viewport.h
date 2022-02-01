@@ -50,7 +50,7 @@ public:
     void setOffset(QPoint offset);
 
     const Polygon& getPolygon(const QString &name) { return mMapPolygon[name]; }
-    const QMap<QString, Polygon>& getAllPolygon() { return mMapPolygon; }
+//    const QMap<QString, Polygon>& getAllPolygon() { return mMapPolygon; }
     const Background& getBackground(const QString &name) { return mMapBackground[name]; }
     QPoint getOffset() { return mOffset; }
     void clear();

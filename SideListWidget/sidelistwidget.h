@@ -11,6 +11,7 @@ class SideListWidget : public QListWidget
 {
     Q_OBJECT
 protected:
+    void dropEvent(QDropEvent *ev) override;
     void mouseReleaseEvent(QMouseEvent *ev) override;
 
 public:
@@ -22,6 +23,7 @@ signals:
     void newPolygon();
     void newBackground();
 
+    void itemMoved();
     void itemEnabledChanged(QListWidgetItem *item);
     void itemTextChanged(const QString &oldName, QListWidgetItem *item);
     void itemRemoved(const QString &name);

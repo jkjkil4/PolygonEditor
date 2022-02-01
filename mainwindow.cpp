@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->viewport, &Viewport::dataChanged, [this] { setChanged(true); });
 
+    connect(ui->listWidget, &SideListWidget::itemMoved, [this] { setChanged(true); });
     connect(ui->listWidget, &SideListWidget::itemClicked, ui->viewport, &Viewport::onItemClicked);
     connect(ui->listWidget, &SideListWidget::itemEnabledChanged, ui->viewport, &Viewport::onItemEnabledChanged);
     connect(ui->listWidget, &SideListWidget::itemTextChanged, ui->viewport, &Viewport::onItemTextChanged);
@@ -100,18 +101,20 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::addPolygonItem(const QString &name) {
+void MainWindow::addPolygonItem(const QString &name, bool enabled) {
     QListWidgetItem *item = new QListWidgetItem(name);
     item->setData(Qt::UserRole, SideListWidget::Polygon);
-    item->setData(Qt::UserRole + 1, true);
+    item->setData(Qt::UserRole + 1, enabled);
     item->setBackground(QColor(235, 255, 245));
+    item->setForeground(enabled ? Qt::black : Qt::gray);
     ui->listWidget->addItem(item);
 }
-void MainWindow::addBackgroundItem(const QString &name, const QString &filePath) {
+void MainWindow::addBackgroundItem(const QString &name, const QString &filePath, bool enabled) {
     QListWidgetItem *item = new QListWidgetItem(name);
     item->setData(Qt::UserRole, SideListWidget::Background);
-    item->setData(Qt::UserRole + 1, true);
+    item->setData(Qt::UserRole + 1, enabled);
     item->setData(Qt::UserRole + 2, filePath);
+    item->setForeground(enabled ? Qt::black : Qt::gray);
     ui->listWidget->addItem(item);
 }
 
@@ -239,7 +242,7 @@ bool MainWindow::open(const QString &filePath) {
                     node = node.nextSibling();
                 }
 
-                addPolygonItem(name);
+                addPolygonItem(name, polygon.base.enabled);
                 ui->viewport->addPolygon(name, polygon);
             } else if(elem.tagName() == "Background") {
                 Viewport::Background background;
@@ -250,7 +253,7 @@ bool MainWindow::open(const QString &filePath) {
                 background.base.y = elem.attribute("y").toInt();
                 background.base.enabled = elem.attribute("enabled").toInt();
 
-                addBackgroundItem(name, filePath);
+                addBackgroundItem(name, filePath, background.base.enabled);
                 ui->viewport->addBackground(name, filePath, background);
             }
         }
@@ -290,11 +293,16 @@ QString MainWindow::fmt(const QString &name, const Viewport::Polygon &polygon, d
 }
 
 QString MainWindow::fmtAll(double scale) {
-    QMap<QString, Viewport::Polygon> map = ui->viewport->getAllPolygon();
     QString total;
-    for(auto iter = map.cbegin(); iter != map.cend(); ++iter) {
-        total += fmt(iter.key(), iter.value(), scale);
-        total += "\n\n";
+    int count = ui->listWidget->count();
+    for(int i = 0; i < count; i++) {
+        QListWidgetItem *item = ui->listWidget->item(i);
+        SideListWidget::ItemType type = (SideListWidget::ItemType)item->data(Qt::UserRole).toInt();
+        if(type == SideListWidget::ItemType::Polygon) {
+            const Viewport::Polygon &polygon = ui->viewport->getPolygon(item->text());
+            total += fmt(item->text(), polygon, scale);
+            total += "\n\n";
+        }
     }
     return total;
 }

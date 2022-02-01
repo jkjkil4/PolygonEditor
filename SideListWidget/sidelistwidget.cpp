@@ -2,7 +2,14 @@
 
 SideListWidget::SideListWidget(QWidget *parent) : QListWidget(parent)
 {
+    setAcceptDrops(true);
+    setDragEnabled(true);
+}
 
+void SideListWidget::dropEvent(QDropEvent *ev) {
+    QListWidget::dropEvent(ev);
+    delete takeItem(currentRow());
+    emit itemMoved();
 }
 
 void SideListWidget::mouseReleaseEvent(QMouseEvent *ev) {

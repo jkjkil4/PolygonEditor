@@ -27,8 +27,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void addPolygonItem(const QString &name);
-    void addBackgroundItem(const QString &name, const QString &filePath);
+    void addPolygonItem(const QString &name, bool enabled = true);
+    void addBackgroundItem(const QString &name, const QString &filePath, bool enabled = true);
 
     void setChanged(bool changed);
 
